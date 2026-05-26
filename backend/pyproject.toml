@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "exam-ai-backend"
+version = "1.0.0"
+description = "试卷AI答题系统 - 后端服务"
+packages = [{ include = "app" }]
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.13"
+fastapi = ">=0.100.0"
+uvicorn = ">=0.23.0"
+sqlalchemy = ">=2.0.0"
+pillow = ">=10.0.0"
+python-dotenv = ">=1.0.0"
+python-multipart = ">=0.0.6"
+pydantic = ">=2.0.0"
+pydantic-settings = ">=2.0.0"
+requests = ">=2.31.0"
+itsdangerous = ">=2.1.2"
+
+[build-system]
+requires = ["poetry-core>=1.7.0"]
+build-backend = "poetry.core.masonry.api"

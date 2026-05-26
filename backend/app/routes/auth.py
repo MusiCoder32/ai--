@@ -19,7 +19,10 @@ class GuestLoginRequest(BaseModel):
 
 
 class GuestLoginResponse(BaseModel):
-    success: bool =   status: int
+    success: bool
+    user_id: Optional[str] = None
+    username: Optional[str] = None
+    status: Optional[int] = None
     signed_device_id: str
     expired_at: Optional[str]
     message: Optional[str] = None

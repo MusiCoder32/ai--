@@ -6,12 +6,13 @@ import os
 
 from app.config import settings
 from app.db import get_db, ExamPaper, Question
-from app.services.local_ocr_service import LocalOCRService
+
 from app.services.llm_service import LLMService
+from app.services.ocr_service import OCRService
 
 router = APIRouter(prefix="/api/papers", tags=["papers"])
 
-ocr_service = LocalOCRService(settings.TESSERACT_PATH if settings.TESSERACT_PATH else None)
+ocr_service = OCRService()
 llm_service = LLMService()
 
 
@@ -109,7 +110,7 @@ async def run_ocr(paper_id: str, db: Session = Depends(get_db)):
     image_path = str(settings.UPLOAD_DIR / os.path.basename(paper.original_image_url))
     
     try:
-        result = ocr_service.recognize_text(image_path, lang=settings.OCR_LANGUAGES)
+        result = ocr_service.recognize_text(image_path)
         
         if not result:
             return {"success": False, "message": "OCR识别失败，未检测到文字"}

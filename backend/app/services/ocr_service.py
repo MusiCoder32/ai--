@@ -1,5 +1,4 @@
 import requests
-import json
 from ..config import settings
 
 class OCRService:
@@ -20,23 +19,39 @@ class OCRService:
             self.token = response.json().get("access_token")
             return self.token
         return None
-    
-    def recognize_text(self, image_path):
+
+    def _ensure_token(self):
         if not self.token:
             self.get_access_token()
-        
-        url = "https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic"
+        return self.token
+    
+    def recognize_text(self, image_path):
+        if not self._ensure_token():
+            return []
+
+        url = "https://aip.baidubce.com/rest/2.0/ocr/v1/general"
         with open(image_path, "rb") as f:
             image_data = f.read()
-        
-        params = {
-            "image": image_data,
-            "access_token": self.token
-        }
-        
-        response = requests.post(url, files={"image": image_data}, params={"access_token": self.token})
-        if response.status_code == 200:
-            result = response.json()
-            if "words_result" in result:
-                return result["words_result"]
-        return []
+
+        response = requests.post(
+            url,
+            files={"image": image_data},
+            params={"access_token": self.token},
+            data={"paragraph": "false"}
+        )
+        if response.status_code != 200:
+            return []
+
+        result = response.json()
+        words_result = result.get("words_result", [])
+        normalized = []
+        for item in words_result:
+            location = item.get("location", {})
+            normalized.append({
+                "words": item.get("words", ""),
+                "left": location.get("left", 0),
+                "top": location.get("top", 0),
+                "width": location.get("width", 0),
+                "height": location.get("height", 0)
+            })
+        return normalized
